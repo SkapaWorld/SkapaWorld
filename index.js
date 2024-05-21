@@ -1,5 +1,3 @@
-screen.orientation.lock(landscape-primary);
-
 window.addEventListener("message", ({ data }) => {
     const pdData = data?.playdeck;
     if (!pdData) return;
