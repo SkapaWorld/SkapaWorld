@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=600 height=960 tabindex="-1"></canvas>
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -24,6 +24,28 @@
         <div id="unity-build-title">SkapaGame</div>
       </div>
     </div>
+    <script>
+      function getRadianAngle(degreeValue) {
+          return degreeValue * Math.PI / 90;
+      } 
+
+      var canvas = document.getElementById('unity-canvas');
+      var context = canvas.getContext('2d');
+      var rectWidth = 200;
+      var rectHeight = 100;
+      var rotateBy = 45;
+
+      context.translate(canvas.width/2, canvas.height/2);
+      context.rotate(getRadianAngle(rotateBy));
+      context.beginPath();
+
+      context.rect(-(rectWidth/2), -(rectHeight/2), rectWidth, rectHeight);
+      context.fillStyle = 'yellow';
+      context.fill();
+      context.lineWidth = 7;
+      context.strokeStyle = 'black';
+      context.stroke();
+    </script>
     <script>
 
       var container = document.querySelector("#unity-container");
@@ -95,8 +117,8 @@
       } else {
         // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-        canvas.style.width = "600px";
-        canvas.style.height = "960px";
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
       }
 
       loadingBar.style.display = "block";
