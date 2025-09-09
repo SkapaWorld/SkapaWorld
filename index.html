@@ -4,7 +4,13 @@
   <meta charset="utf-8">
   <title>SkapaGame</title>
   <link rel="stylesheet" href="TemplateData/style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Важные мета для горизонтали -->
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="screen-orientation" content="landscape">
+  <meta name="x5-orientation" content="landscape">
+  <meta name="x5-fullscreen" content="true">
+  <meta name="full-screen" content="yes">
 </head>
 <body>
   <div id="unity-container" class="unity-desktop">
@@ -96,6 +102,7 @@
     };
 
     document.body.appendChild(script);
-  </script>
-</body>
-</html>
+
+    // === Фиксация ориентации в горизонталь ===
+    function lockLandscape() {
+      if (scr
