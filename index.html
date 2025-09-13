@@ -4,13 +4,7 @@
   <meta charset="utf-8">
   <title>SkapaGame</title>
   <link rel="stylesheet" href="TemplateData/style.css">
-
-  <!-- Важные мета для горизонтали -->
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="screen-orientation" content="landscape">
-  <meta name="x5-orientation" content="landscape">
-  <meta name="x5-fullscreen" content="true">
-  <meta name="full-screen" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
   <div id="unity-container" class="unity-desktop">
@@ -77,6 +71,10 @@
       document.getElementsByTagName('head')[0].appendChild(meta);
       container.className = "unity-mobile";
       canvas.className = "unity-mobile";
+
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock("landscape").catch(() => {});
+      }
     } else {
       canvas.style.width = "960px";
       canvas.style.height = "600px";
@@ -88,21 +86,24 @@
     script.src = loaderUrl;
     script.onload = () => {
       createUnityInstance(canvas, config, (progress) => {
-        progressBarFull.style.width = 100 * progress + "%";
-        PlaydeckAPI.loading(Math.floor(progress * 100));
+        progressBarFull.style.width = (100 * progress) + "%";
+        if (typeof PlaydeckAPI !== "undefined") {
+          PlaydeckAPI.loading(Math.floor(progress * 100));
+        }
       }).then((unityInstance) => {
         loadingBar.style.display = "none";
         fullscreenButton.onclick = () => {
           unityInstance.SetFullscreen(1);
         };
-        PlaydeckAPI.loading(100);
+        if (typeof PlaydeckAPI !== "undefined") {
+          PlaydeckAPI.loading(100);
+        }
       }).catch((message) => {
         alert(message);
       });
     };
 
     document.body.appendChild(script);
-
-    // === Фиксация ориентации в горизонталь ===
-    function lockLandscape() {
-      if (scr
+  </script>
+</body>
+</html>
