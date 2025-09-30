@@ -24,7 +24,56 @@
   </div>
 
   <script src="index.js"></script>
-
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+  // Initialize Telegram Web App if available
+  if (window.Telegram?.WebApp) {
+    console.log("📱 Telegram Web App detected - initializing...");
+    
+    const tg = window.Telegram.WebApp;
+    
+    // Initialize and expand
+    tg.ready();
+    tg.expand();
+    
+    // Get user data
+    const user = tg.initDataUnsafe?.user;
+    const userId = user?.id;
+    
+    console.log("Telegram User:", user);
+    console.log("Telegram User ID:", userId);
+    
+    // Make Telegram data available globally for Unity
+    window.telegramUserData = {
+      id: userId,
+      firstName: user?.first_name,
+      lastName: user?.last_name,
+      username: user?.username,
+      language: user?.language_code,
+      isPremium: user?.is_premium || false,
+      platform: tg.platform,
+      theme: tg.colorScheme
+    };
+    
+    // Log all available data
+    console.log("📊 Full Telegram Data:", {
+      user: user,
+      initData: tg.initData,
+      initDataUnsafe: tg.initDataUnsafe,
+      platform: tg.platform,
+      themeParams: tg.themeParams,
+      version: tg.version
+    });
+    
+    // You can also pass this to Unity via your existing Playdeck system
+    if (typeof PlaydeckAPI !== "undefined") {
+      // Notify Playdeck about Telegram user
+      console.log("Passing Telegram user to Playdeck system");
+    }
+  } else {
+    console.log("🌐 Regular web environment - no Telegram Web App");
+  }
+</script>
   <script>
     const container = document.querySelector("#unity-container");
     const canvas = document.querySelector("#unity-canvas");
