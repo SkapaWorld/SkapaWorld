@@ -49,4 +49,9 @@ window.addEventListener("message", ({ data }) => {
 
 if (window.Telegram?.WebApp) {
   window.Telegram.WebApp.ready();
+  const tg = window.Telegram.WebApp;
+const initDataUnsafe = tg.initDataUnsafe;
+
+const userId = initDataUnsafe?.user?.id;
+console.log("Telegram User ID:", userId);
 }
