@@ -58,14 +58,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     console.log('Telegram User ID:', userId);
 
-    // ✅ Example GET
-    try {
-        const gameData = await apiGet('/api/game', { userId });
-        console.log('GET result:', gameData);
-    } catch (e) {
-        console.error('GET failed', e);
-    }
-
     // ✅ Example POST
     try {
         const userData = await apiPost('http://45.9.75.242:8080/profile/create', { "telegram_id":String(userId),});
