@@ -24,8 +24,10 @@
       <div id="unity-build-title">SkapaGame</div>
     </div>
   </div>
-  <script src="app.js"></script>
+ 
+ <script type="module" src="app.js"></script>
   <script src="index.js"></script>
+  
   
   <script>
     const container = document.querySelector("#unity-container");
@@ -95,7 +97,7 @@
       }).then((unityInstance) => {
         loadingBar.style.display = "none";
         fullscreenButton.onclick = () => {
-          unityInstance.SetFullscreen(1);
+          e.SetFullscreen(1);
         };
         if (typeof PlaydeckAPI !== "undefined") {
           PlaydeckAPI.loading(100);

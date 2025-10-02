@@ -1,7 +1,7 @@
-// storage key
+import { apiPost } from './game-logic/api.js';
+
 const TG_USER_ID = 'tg_user_id';
 
-// ✅ Store only the Telegram user ID
 function saveTelegramUserId() {
     const tg = window.Telegram?.WebApp;
     if (!tg) return null;
@@ -16,53 +16,58 @@ function saveTelegramUserId() {
     return userId;
 }
 
-// ✅ Get stored user id
 function getTelegramUserId() {
     return localStorage.getItem(TG_USER_ID) || null;
 }
 
-// ✅ Core API handler
-async function apiRequest({ url, method = 'GET', params = {}, data = {} }) {
+async function initApp() {
+    let userId = getTelegramUserId() || saveTelegramUserId();
+
+    if (!userId) {
+        userId = 338631567;
+        console.warn('⚠️ No Telegram ID found. Using test ID:', userId);
+    }
+
+    console.log('👤 Using Telegram ID:', userId);
+
     try {
-        const response = await axios({
-            url,
-            method,
-            params,
-            data
+        console.log('🚀 Creating profile...');
+        const profile = await apiPost('/profile/create', {
+            telegram_id: String(userId)
         });
-        return response.data;
+        if (profile?.exists) {
+            console.log('ℹ️ Existing profile detected');
+        } else {
+            console.log('✅ Profile created:', profile);
+        }
+
+        console.log('🔄 Fetching user coins...');
+        const coins = await apiPost('/profile/get-coins', {
+            telegram_id: String(userId)
+        }, true);
+
+        console.log('✅ Coins:', coins);
+
+        console.log('📅 Checking daily status...');
+        const daily = await apiPost('/daily/daily/check', {
+            telegram_id: String(userId)
+        }, true);
+
+        console.log('✅ Daily check:', daily);
+
+        console.log('🎉 All API calls successful!');
+        return { profile, coins, daily };
+
     } catch (err) {
-        console.error('API Request Error:', err);
+        const message = getErrorMessage(err);
+        console.error('❌ API flow failed:', message);
+        alert(`Error: ${message}`);
         throw err;
     }
 }
-
-// ✅ GET helper
-function apiGet(url, params = {}) {
-    return apiRequest({ url, method: 'GET', params });
-}
-
-// ✅ POST helper
-function apiPost(url, data = {}) {
-    return apiRequest({ url, method: 'POST', data });
-}
-
-// ✅ Example usage
-document.addEventListener('DOMContentLoaded', async () => {
-    // 1. Save or retrieve tg user ID
-    let userId = saveTelegramUserId();
-    if (!userId){ 
-        userId = getTelegramUserId();
-        
-    }
-
-    console.log('Telegram User ID:', userId);
-
-    // ✅ Example POST
-    try {
-        const userData = await apiPost('http://45.9.75.242:8080/profile/create', { "telegram_id":String(userId),});
-        console.log('POST result:', userData);
-    } catch (e) {
-        console.error('POST failed', e);
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    initApp().then(data => {
+        console.log('✅ Final results:', data);
+        // You can now use `data.profile`, `data.coins`, `data.daily`
+    });
 });
