@@ -1,4 +1,4 @@
-const BASE_URL = 'http://45.9.75.242:8080';
+const BASE_URL = 'https://api.skapa.world/';
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 
