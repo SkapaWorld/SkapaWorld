@@ -1,5 +1,5 @@
 import { apiPost } from './game-logic/api.js';
-
+import { setCoinBalance } from './game-logic/coins.js';
 const TG_USER_ID = 'tg_user_id';
 
 function saveTelegramUserId() {
@@ -47,6 +47,8 @@ async function initApp() {
         }, true);
 
         console.log('✅ Coins:', coins);
+        setCoinBalance((parseInt(coins)));
+    
 
         console.log('📅 Checking daily status...');
         const daily = await apiPost('/daily/daily/check', {
@@ -59,15 +61,16 @@ async function initApp() {
         return { profile, coins, daily };
 
     } catch (err) {
-        const message = getErrorMessage(err);
-        console.error('❌ API flow failed:', message);
-        alert(`Error: ${message}`);
+        console.error('❌ API flow failed:', err);
+     
         throw err;
     }
 }
-document.addEventListener('DOMContentLoaded', () => {
+
+
+export function startApiFlow() {
     initApp().then(data => {
         console.log('✅ Final results:', data);
-        // You can now use `data.profile`, `data.coins`, `data.daily`
+        // use data.profile, data.coins, data.daily
     });
-});
+}

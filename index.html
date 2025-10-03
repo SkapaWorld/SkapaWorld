@@ -1,113 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>SkapaGame</title>
-  <link rel="stylesheet" href="TemplateData/style.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
-  <div id="unity-container" class="unity-desktop">
-    <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
-    <div id="unity-loading-bar">
-      <div id="unity-logo"></div>
-      <div id="unity-progress-bar-empty">
-        <div id="unity-progress-bar-full"></div>
+  <head>
+    <meta charset="utf-8" />
+    <title>SkapaGame</title>
+    <link rel="stylesheet" href="TemplateData/style.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"></div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">SkapaGame</div>
       </div>
     </div>
-    <div id="unity-warning"></div>
-    <div id="unity-footer">
-      <div id="unity-webgl-logo"></div>
-      <div id="unity-fullscreen-button"></div>
-      <div id="unity-build-title">SkapaGame</div>
-    </div>
-  </div>
- 
- <script type="module" src="app.js"></script>
-  <script src="index.js"></script>
-  
-  
-  <script>
-    const container = document.querySelector("#unity-container");
-    const canvas = document.querySelector("#unity-canvas");
-    const loadingBar = document.querySelector("#unity-loading-bar");
-    const progressBarFull = document.querySelector("#unity-progress-bar-full");
-    const fullscreenButton = document.querySelector("#unity-fullscreen-button");
-    const warningBanner = document.querySelector("#unity-warning");
 
-    function unityShowBanner(msg, type) {
-      function updateBannerVisibility() {
-        warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-      }
-      const div = document.createElement('div');
-      div.innerHTML = msg;
-      warningBanner.appendChild(div);
-      if (type === 'error') div.style = 'background: red; padding: 10px;';
-      else {
-        if (type === 'warning') div.style = 'background: yellow; padding: 10px;';
-        setTimeout(() => {
-          warningBanner.removeChild(div);
-          updateBannerVisibility();
-        }, 5000);
-      }
-      updateBannerVisibility();
-    }
+    <script type="module" src="app.js"></script>
+    <script src="index.js"></script>
 
-    const buildUrl = "Build";
-    const loaderUrl = buildUrl + "/SkapsBuild.loader.js";
-    const config = {
-      dataUrl: buildUrl + "/SkapsBuild.data.unityweb",
-      frameworkUrl: buildUrl + "/SkapsBuild.framework.js.unityweb",
-      codeUrl: buildUrl + "/SkapsBuild.wasm.unityweb",
-      streamingAssetsUrl: "StreamingAssets",
-      companyName: "Paul Fet",
-      productName: "SkapaGame",
-      productVersion: "1.0",
-      showBanner: unityShowBanner,
-    };
+    <script type="module">
+      import { startApiFlow } from "./app.js";
+      import { setUnityInstance } from "./game-logic/coins.js";
 
-    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-      const meta = document.createElement('meta');
-      meta.name = 'viewport';
-      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-      document.getElementsByTagName('head')[0].appendChild(meta);
-      container.className = "unity-mobile";
-      canvas.className = "unity-mobile";
+      const container = document.querySelector("#unity-container");
+      const canvas = document.querySelector("#unity-canvas");
+      const loadingBar = document.querySelector("#unity-loading-bar");
+      const progressBarFull = document.querySelector(
+        "#unity-progress-bar-full"
+      );
+      const fullscreenButton = document.querySelector(
+        "#unity-fullscreen-button"
+      );
+      const warningBanner = document.querySelector("#unity-warning");
 
-      if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock("landscape").catch(() => {});
-      }
-    } else {
-      canvas.style.width = "960px";
-      canvas.style.height = "600px";
-    }
-
-    loadingBar.style.display = "block";
-
-    const script = document.createElement("script");
-    script.src = loaderUrl;
-    script.onload = () => {
-      createUnityInstance(canvas, config, (progress) => {
-        progressBarFull.style.width = (100 * progress) + "%";
-        if (typeof PlaydeckAPI !== "undefined") {
-          PlaydeckAPI.loading(Math.floor(progress * 100));
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length
+            ? "block"
+            : "none";
         }
-      }).then((unityInstance) => {
-        loadingBar.style.display = "none";
-        fullscreenButton.onclick = () => {
-          e.SetFullscreen(1);
-        };
-        if (typeof PlaydeckAPI !== "undefined") {
-          PlaydeckAPI.loading(100);
+        const div = document.createElement("div");
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type === "error") div.style = "background: red; padding: 10px;";
+        else {
+          if (type === "warning")
+            div.style = "background: yellow; padding: 10px;";
+          setTimeout(() => {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
         }
-      }).catch((message) => {
-        alert(message);
-      });
-    };
+        updateBannerVisibility();
+      }
 
-    document.body.appendChild(script);
-  </script>
-</body>
+      const buildUrl = "Build";
+      const loaderUrl = buildUrl + "/SkapsBuild.loader.js";
+      const config = {
+        dataUrl: buildUrl + "/SkapsBuild.data.unityweb",
+        frameworkUrl: buildUrl + "/SkapsBuild.framework.js.unityweb",
+        codeUrl: buildUrl + "/SkapsBuild.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "Paul Fet",
+        productName: "SkapaGame",
+        productVersion: "1.0",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        const meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content =
+          "width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes";
+        document.getElementsByTagName("head")[0].appendChild(meta);
+        container.className = "unity-mobile";
+        canvas.className = "unity-mobile";
+
+        if (screen.orientation && screen.orientation.lock) {
+          screen.orientation.lock("landscape").catch(() => {});
+        }
+      } else {
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
+      loadingBar.style.display = "block";
+
+      // Unity instance reference for coin functions
+      let unityInstanceRef = null;
+      window.unityReady = function () {
+        console.log("✅ Unity finished loading!");
+
+        // ✅ Now it’s safe to call your API
+        startApiFlow();
+      };
+      const script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+          if (typeof PlaydeckAPI !== "undefined") {
+            PlaydeckAPI.loading(Math.floor(progress * 100));
+          }
+        })
+          .then((unityInstance) => {
+            unityInstanceRef = unityInstance;
+            setUnityInstance(unityInstance); // Store the instance
+            loadingBar.style.display = "none";
+            fullscreenButton.onclick = () => {
+              unityInstance.SetFullscreen(1);
+            };
+
+            console.log("Unity loaded - Coin functions ready!");
+            console.log(
+              "Use setCoinBalance(amount) or addCoins(amount) in browser console"
+            );
+
+            if (typeof PlaydeckAPI !== "undefined") {
+              PlaydeckAPI.loading(100);
+            }
+          })
+          .catch((message) => {
+            alert(message);
+          });
+      };
+
+      document.body.appendChild(script);
+    </script>
+  </body>
 </html>
