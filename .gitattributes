@@ -1,4 +1,9 @@
-*.unityweb filter=lfs diff=lfs merge=lfs -text
-*.wasm filter=lfs diff=lfs merge=lfs -text
-*.png filter=lfs diff=lfs merge=lfs -text
-*.mp4 filter=lfs diff=lfs merge=lfs -text
+# ✅ Treat WebGL build files as binary (no text conversion)
+*.unityweb filter=lfs diff=lfs merge=lfs
+*.wasm     filter=lfs diff=lfs merge=lfs
+*.data     filter=lfs diff=lfs merge=lfs
+
+# ✅ Also binary game assets
+*.png      filter=lfs diff=lfs merge=lfs
+*.jpg      filter=lfs diff=lfs merge=lfs
+*.mp4      filter=lfs diff=lfs merge=lfs
