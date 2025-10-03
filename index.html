@@ -107,7 +107,7 @@
       const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
-        createUnityInstance(canvas, config, (progress) => {
+        window.createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
           if (typeof PlaydeckAPI !== "undefined") {
             PlaydeckAPI.loading(Math.floor(progress * 100));
