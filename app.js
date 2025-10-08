@@ -10,8 +10,9 @@ function saveTelegramUserId() {
     tg.expand();
 
     const userId = tg.initDataUnsafe?.user?.id;
-    if (userId) {
+     if (userId) {
         localStorage.setItem(TG_USER_ID, userId);
+        console.log('💾 Saved Telegram ID to localStorage:', userId);
     }
     return userId;
 }

@@ -27,29 +27,9 @@
 
     <script type="module" src="app.js"></script>
     <script src="index.js"></script>
-    <script>
-      (() => {
-        // real private logic (not accessible from console)
-        function handleUnityGameOver(distance, level) {
-          console.log("✅ Unity Game Over received", distance, level);
-          // send to server here securely
-        }
+   <script type="module" src="game-logic/saves.js"></script>
+   <script src="game-logic/test.js" type="module"></script>
 
-        // expose a bridge that only Unity can call
-        Object.defineProperty(window, "OnUnityGameOver", {
-          value: function (distance, level) {
-            // validate input (Unity passes number + string)
-            if (typeof distance === "number" && typeof level === "string") {
-              handleUnityGameOver(distance, level);
-            } else {
-              console.warn("Invalid call blocked");
-            }
-          },
-          writable: false, // cannot overwrite
-          configurable: false, // cannot delete
-        });
-      })();
-    </script>
     <script type="module">
       import { startApiFlow } from "./app.js";
       import { setUnityInstance } from "./game-logic/coins.js";
