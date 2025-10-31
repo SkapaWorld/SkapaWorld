@@ -1,3 +1,4 @@
+import {apiPost} from "./api.js";
 let unityInstance = null;
 
 export function setUnityInstance(instance) {
@@ -39,3 +40,23 @@ export function addCoins(amount) {
     }
 }
 
+
+async function RequestRecordsFromAPI(coins) {
+    try {
+        const data = await apiPost("/records/global", {
+           level: coins,
+        });
+        console.log(`✅fetched records`);
+        unityInstance.SendMessage("RecmenuSch", "OnReceiveRecords", JSON.stringify(data));
+    } catch (error) {
+        console.error('❌ Failed to fetch records', error);
+    }
+}
+
+Object.defineProperty(window, "RequestRecordsFromAPI", {
+    value: function (coin) {
+        RequestRecordsFromAPI(coin);
+    },
+    writable: false,
+    configurable: false,
+});

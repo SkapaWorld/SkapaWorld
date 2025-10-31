@@ -1,4 +1,4 @@
-import { apiPut } from "./api.js";
+import { apiPost, apiPut } from "./api.js";
 import { getCurrentUserId } from "./user.js";
 
 async function JSGameOver(coins) {
