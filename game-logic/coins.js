@@ -1,4 +1,5 @@
-import {apiPost} from "./api.js";
+import {apiPost,apiPut} from "./api.js";
+import {getCurrentUserId} from "./user.js";
 let unityInstance = null;
 
 export function setUnityInstance(instance) {
@@ -40,7 +41,6 @@ export function addCoins(amount) {
     }
 }
 
-
 async function RequestRecordsFromAPI(coins) {
     try {
         const data = await apiPost("/records/global", {
@@ -56,6 +56,67 @@ async function RequestRecordsFromAPI(coins) {
 Object.defineProperty(window, "RequestRecordsFromAPI", {
     value: function (coin) {
         RequestRecordsFromAPI(coin);
+    },
+    writable: false,
+    configurable: false,
+});
+
+async function GetOwnedTricks() {
+    const telegramId = getCurrentUserId();
+    try {
+        const data = await apiPost("/tricks/tricks", {
+             telegram_id: telegramId ,
+        });
+      unityInstance.SendMessage('Buy1B', 'OverrideTrickStates', JSON.stringify(data));
+    } catch (error) {
+        console.error('❌ Failed to purchase tricks:', error);
+    }
+}
+
+Object.defineProperty(window, "OnTrick", {
+    value: function () {
+        GetOwnedTricks();
+    },
+    writable: false,
+    configurable: false,
+});
+
+async function OnTrickPurchasedUnity(trickId) {
+   const telegramId = getCurrentUserId();
+    try {
+        await apiPost("/tricks/purchase", {
+            profile: { telegram_id: telegramId },
+            trick: {trick_id: trickId},
+        });
+        GetOwnedTricks()
+    } catch (error) {
+        console.error('❌ Failed to purchase tricks:', error);
+    }
+}
+
+Object.defineProperty(window, "OnTrickPurchasedUnity", {
+    value: function (coin) {
+        OnTrickPurchasedUnity(coin);
+    },
+    writable: false,
+    configurable: false,
+});
+async function OnTrickSelectedUnity(trickId) {
+    const telegramId = getCurrentUserId();
+    try {
+        await apiPut("/tricks/update-status", {
+            profile: { telegram_id: telegramId },
+            trick: {trick_id: trickId, is_in_use: true  },
+        });
+        GetOwnedTricks()
+    } catch (error) {
+        console.error('❌ Failed to select trick:', error);
+    }
+}
+
+Object.defineProperty(window, "OnTrickSelectedUnity", {
+    value: function (coin) {
+        OnTrickSelectedUnity(coin);
     },
     writable: false,
     configurable: false,
