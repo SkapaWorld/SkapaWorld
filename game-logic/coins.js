@@ -104,7 +104,7 @@ Object.defineProperty(window, "OnTrickPurchasedUnity", {
 async function OnTrickSelectedUnity(trickId) {
     const telegramId = getCurrentUserId();
     try {
-        await apiPut("/tricks/update-status", {
+        await apiPut("/tricks/update-s/.tatus", {
             profile: { telegram_id: telegramId },
             trick: {trick_id: trickId, is_in_use: true  },
         });
