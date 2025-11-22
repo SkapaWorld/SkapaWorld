@@ -1,5 +1,6 @@
-import {apiPost,apiPut} from "./api.js";
-import {getCurrentUserId} from "./user.js";
+import { apiPost, apiPut } from "./api.js";
+import { getCurrentUserId } from "./user.js";
+
 let unityInstance = null;
 
 export function setUnityInstance(instance) {
@@ -44,7 +45,7 @@ export function addCoins(amount) {
 async function RequestRecordsFromAPI(coins) {
     try {
         const data = await apiPost("/records/global", {
-           level: coins,
+            level: coins,
         });
         console.log(`✅fetched records`);
         unityInstance.SendMessage("RecmenuSch", "OnReceiveRecords", JSON.stringify(data));
@@ -65,9 +66,9 @@ async function GetOwnedTricks() {
     const telegramId = getCurrentUserId();
     try {
         const data = await apiPost("/tricks/tricks", {
-             telegram_id: telegramId ,
+            telegram_id: telegramId,
         });
-      unityInstance.SendMessage('Buy1B', 'OverrideTrickStates', JSON.stringify(data));
+        unityInstance.SendMessage('Buy1B', 'OverrideTrickStates', JSON.stringify(data));
     } catch (error) {
         console.error('❌ Failed to purchase tricks:', error);
     }
@@ -82,11 +83,11 @@ Object.defineProperty(window, "OnTrick", {
 });
 
 async function OnTrickPurchasedUnity(trickId) {
-   const telegramId = getCurrentUserId();
+    const telegramId = getCurrentUserId();
     try {
         await apiPost("/tricks/purchase", {
             profile: { telegram_id: telegramId },
-            trick: {trick_id: trickId},
+            trick: { trick_id: trickId },
         });
         GetOwnedTricks()
     } catch (error) {
@@ -95,8 +96,8 @@ async function OnTrickPurchasedUnity(trickId) {
 }
 
 Object.defineProperty(window, "OnTrickPurchasedUnity", {
-    value: function (coin) {
-        OnTrickPurchasedUnity(coin);
+    value: function (trickId) {
+        OnTrickPurchasedUnity(trickId);
     },
     writable: false,
     configurable: false,
@@ -104,9 +105,9 @@ Object.defineProperty(window, "OnTrickPurchasedUnity", {
 async function OnTrickSelectedUnity(trickId) {
     const telegramId = getCurrentUserId();
     try {
-        await apiPut("/tricks/update-s/.tatus", {
+        await apiPut("/tricks/update-status", {
             profile: { telegram_id: telegramId },
-            trick: {trick_id: trickId, is_in_use: true  },
+            trick: { trick_id: trickId, is_in_use: true },
         });
         GetOwnedTricks()
     } catch (error) {
@@ -117,6 +118,47 @@ async function OnTrickSelectedUnity(trickId) {
 Object.defineProperty(window, "OnTrickSelectedUnity", {
     value: function (coin) {
         OnTrickSelectedUnity(coin);
+    },
+    writable: false,
+    configurable: false,
+});
+
+async function starspurchase( trickId) {
+    try {
+        const paymentKey = "pXMjV:Lksj9HMa0Yyhaq9LiCHOBM2avrmfDI000e7bKYHLqC"; // Replace with actual key
+        
+        const response = await axios({
+            url: "https://pay.good-games.xyz/v1/invoice",
+            method: "POST",
+            headers: {
+                "X-Auth-Tpay": paymentKey,
+                "Content-Type": "application/json"
+            },
+            data: {
+                "title": trickId,
+                "description": trickId,
+                "orderId": 22,
+                "amount": 1,
+
+            },
+            timeout: 10000,
+            validateStatus: () => true
+        });
+        if (response.data && response.data.url) {
+            window.location.href = response.data.url;
+        } else {
+            console.error("No redirect URL received");
+        }
+        
+        return response;
+    } catch (error) {
+        console.error("Payment error:", error);
+    }
+}
+
+Object.defineProperty(window, "StarsPurchase", {
+    value: function (coin, trickId) {
+        starspurchase(coin, trickId);
     },
     writable: false,
     configurable: false,
