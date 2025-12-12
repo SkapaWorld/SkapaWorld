@@ -90,8 +90,13 @@ async function OnTrickPurchasedUnity(trickId) {
             trick: { trick_id: trickId },
         });
         if (response && response.paymentUrl) {
-            // Open in new tab
-         window.Telegram.WebApp.openLink(response.data.paymentUrl);
+        const payButton = document.getElementById("payButton");
+            payButton.style.display = "block";
+            payButton.onclick = () => {
+                window.open(response.data.paymentUrl, "_blank"); // Opens in new tab without closing WebApp
+            };
+            // Optionally, scroll to button or highlight
+            payButton.scrollIntoView({ behavior: "smooth" });
         } else {
             console.error("No redirect URL received");
         }
