@@ -89,9 +89,9 @@ async function OnTrickPurchasedUnity(trickId) {
             profile: { telegram_id: telegramId },
             trick: { trick_id: trickId },
         });
-        if (response.data && response.data.url) {
+        if (response.data && response.data.paymentUrl) {
             // Open in new tab
-            window.open(response.data.url, "_blank");
+            window.open(response.data.paymentUrl, "_blank");
         } else {
             console.error("No redirect URL received");
         }
