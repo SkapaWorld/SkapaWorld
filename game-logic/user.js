@@ -23,7 +23,7 @@ export function getCurrentUserId() {
     let userId = getTelegramUserId() || saveTelegramUserId();
 
     if (!userId) {
-        userId = '338631567'; // fallback test ID
+        userId = '953768018'; // fallback test ID
         console.warn('⚠️ No Telegram ID found. Using test ID:', userId);
     }
 

@@ -89,15 +89,12 @@ async function OnTrickPurchasedUnity(trickId) {
             profile: { telegram_id: telegramId },
             trick: { trick_id: trickId },
         });
+
         if (response && response.paymentUrl) {
-          const link = document.createElement("a");
-            link.href = response.paymentUrl;
-            link.target = "_blank"; // Open in new tab
-            link.rel = "noopener noreferrer"; 
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        } else {
+            window.open(response.paymentUrl, "_blank", "noopener,noreferrer");
+        }
+
+        else {
             console.error("No redirect URL received");
         }
         GetOwnedTricks()
