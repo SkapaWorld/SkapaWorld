@@ -85,38 +85,22 @@ Object.defineProperty(window, "OnTrick", {
 async function OnTrickPurchasedUnity(trickId) {
     const telegramId = getCurrentUserId();
     try {
-        const paymentKey = "zVcWy:42IOXqoZLJi6xIuX9sPurSEinKHR9069AAoprLZb88"; // Replace with actual key
-        
-        const response = await axios({
-            url: "https://pay.good-games.xyz/v1/invoice",
-            method: "POST",
-            headers: {
-                "X-Auth-Tpay": paymentKey,
-                "Content-Type": "application/json"
-            },
-            data: {
-                "title": trickId,
-                "description": trickId,
-                "orderId": `order_trick_${trickId}_${telegramId}`,
-                "amount": 1,
-            },
-            timeout: 10000,
-            validateStatus: () => true
+        const response = await apiPost("/tricks/purchase/external", {
+            profile: { telegram_id: telegramId },
+            trick: { trick_id: trickId },
         });
-
         if (response.data && response.data.url) {
             // Open in new tab
             window.open(response.data.url, "_blank");
         } else {
             console.error("No redirect URL received");
         }
-        
+        GetOwnedTricks()
         return response;
     } catch (error) {
-        console.error("Payment error:", error);
+        console.error('❌ Failed to purchase tricks:', error);
     }
 }
-
 
 Object.defineProperty(window, "OnTrickPurchasedUnity", {
     value: function (trickId) {
@@ -141,47 +125,6 @@ async function OnTrickSelectedUnity(trickId) {
 Object.defineProperty(window, "OnTrickSelectedUnity", {
     value: function (coin) {
         OnTrickSelectedUnity(coin);
-    },
-    writable: false,
-    configurable: false,
-});
-
-async function starspurchase( trickId) {
-    try {
-        const paymentKey = "zVcWy:42IOXqoZLJi6xIuX9sPurSEinKHR9069AAoprLZb88"; // Replace with actual key
-        
-        const response = await axios({
-            url: "https://pay.good-games.xyz/v1/invoice",
-            method: "POST",
-            headers: {
-                "X-Auth-Tpay": paymentKey,
-                "Content-Type": "application/json"
-            },
-            data: {
-                "title": trickId,
-                "description": trickId,
-                "orderId": 22,
-                "amount": 1,
-
-            },
-            timeout: 10000,
-            validateStatus: () => true
-        });
-        if (response.data && response.data.url) {
-            window.location.href = response.data.url;
-        } else {
-            console.error("No redirect URL received");
-        }
-        
-        return response;
-    } catch (error) {
-        console.error("Payment error:", error);
-    }
-}
-
-Object.defineProperty(window, "StarsPurchase", {
-    value: function (coin, trickId) {
-        starspurchase(coin, trickId);
     },
     writable: false,
     configurable: false,
