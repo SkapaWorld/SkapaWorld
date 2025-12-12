@@ -91,7 +91,7 @@ async function OnTrickPurchasedUnity(trickId) {
         });
 
         if (response && response.paymentUrl) {
-            window.open(response.paymentUrl, "_blank", "noopener,noreferrer");
+           window.Telegram.WebApp.openLink(response.paymentUrl);
         }
 
         else {
