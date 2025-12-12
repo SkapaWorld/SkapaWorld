@@ -82,26 +82,25 @@ Object.defineProperty(window, "OnTrick", {
     configurable: false,
 });
 
-    async function OnTrickPurchasedUnity(trickId) {
-        const telegramId = getCurrentUserId();
-        try {
-            const response = await apiPost("/tricks/purchase/external", {
-                profile: { telegram_id: telegramId },
-                trick: { trick_id: trickId },
-            });
-            console.log("Full response:", response);  
-            if (response.data && response.data.paymentUrl) {
-                // Open in new tab
-                window.open(response.data.paymentUrl, "_blank");
-            } else {
-                console.error("No redirect URL received");
-            }
-            GetOwnedTricks()
-            return response;
-        } catch (error) {
-            console.error('❌ Failed to purchase tricks:', error);
+async function OnTrickPurchasedUnity(trickId) {
+    const telegramId = getCurrentUserId();
+    try {
+        const response = await apiPost("/tricks/purchase/external", {
+            profile: { telegram_id: telegramId },
+            trick: { trick_id: trickId },
+        });
+        if (response && response.paymentUrl) {
+            // Open in new tab
+            window.open(response.paymentUrl, "_blank");
+        } else {
+            console.error("No redirect URL received");
         }
+        GetOwnedTricks()
+        return response;
+    } catch (error) {
+        console.error('❌ Failed to purchase tricks:', error);
     }
+}
 
 Object.defineProperty(window, "OnTrickPurchasedUnity", {
     value: function (trickId) {
