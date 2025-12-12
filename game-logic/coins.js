@@ -91,7 +91,7 @@ async function OnTrickPurchasedUnity(trickId) {
         });
         if (response && response.paymentUrl) {
             // Open in new tab
-         window.Telegram.WebApp.openLink(response.data.paymentUrl);
+            window.open(response.paymentUrl, "_blank");
         } else {
             console.error("No redirect URL received");
         }
