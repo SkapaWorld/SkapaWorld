@@ -90,13 +90,13 @@ async function OnTrickPurchasedUnity(trickId) {
             trick: { trick_id: trickId },
         });
         if (response && response.paymentUrl) {
-        const payButton = document.getElementById("payButton");
-            payButton.style.display = "block";
-            payButton.onclick = () => {
-                window.open(response.data.paymentUrl, "_blank"); // Opens in new tab without closing WebApp
-            };
-            // Optionally, scroll to button or highlight
-            payButton.scrollIntoView({ behavior: "smooth" });
+          const link = document.createElement("a");
+            link.href = response.paymentUrl;
+            link.target = "_blank"; // Open in new tab
+            link.rel = "noopener noreferrer"; 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         } else {
             console.error("No redirect URL received");
         }
